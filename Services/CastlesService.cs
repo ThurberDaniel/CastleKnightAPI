@@ -38,9 +38,6 @@ namespace castle.Services
         internal Castle Update(Castle update)
         {
             Castle original = GetById(update.Id);
-            original.Name = update.Name.Length > 0 ? update.Name : original.Name;
-            original.BirthYear = update.BirthYear > 0 ? update.BirthYear : original.BirthYear;
-            original.DeathYear = update.DeathYear > 0 ? update.DeathYear : original.DeathYear;
             if (_repo.Update(original))
             {
                 return original;

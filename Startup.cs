@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using castle.Repositories;
+using castle.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
 
 namespace castle
 {
@@ -28,10 +32,30 @@ namespace castle
         {
 
             services.AddControllers();
+
+            // NOTE add transient Services
+            services.AddTransient<CastlesService>();
+            services.AddTransient<KnightsService>();
+
+            // NOTE[epic=db] add transient Repos
+            services.AddTransient<CastlesRepository>();
+            services.AddTransient<KnightsRepository>();
+
+
+            // STUB[epic=db] Create connection to DB
+            services.AddScoped<IDbConnection>(x => CreateDbConnection());
+
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "castle", Version = "v1" });
             });
+        }
+        // STUB[epic=db] establish connection to DB
+        private IDbConnection CreateDbConnection()
+        {
+            string connectionString = Configuration["DB:gearhost"];
+            return new MySqlConnection(connectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
